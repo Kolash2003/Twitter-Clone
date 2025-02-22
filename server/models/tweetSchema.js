@@ -8,12 +8,12 @@ const tweetSchema = new mongoose.Schema(
     },
     likes: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
     },
-    bookmarks: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
+    bookmarks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

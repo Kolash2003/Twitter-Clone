@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import databaseConnection from "./db/database.js";
 import userRouter from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser";
+import tweetRouter from "./routes/tweetRoutes.js";
 
 dotenv.config({
   path: "./.env",
@@ -20,6 +21,7 @@ app.use(
   })
 );
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/tweets", tweetRouter);
 
 databaseConnection();
 
