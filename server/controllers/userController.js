@@ -82,7 +82,6 @@ export const getMyProfile = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-
   res
     .status(200)
     .cookie("token", "", {
@@ -90,6 +89,98 @@ export const logout = (req, res) => {
     })
     .json({
       success: true,
-      message:"User logged out"
+      message: "User logged out",
     });
+};
+
+export const getotherUsers = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const otherUsers = await User.find({ _id: { $ne: id } });
+
+    if (!otherUsers) {
+      return res.status(401).json({
+        message: "No Other Users found",
+      });
+    }
+
+    res.status(200).json({
+      success: "true",
+      otherUsers,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const follow = async (req, res) => {
+  try {
+    const { loggedInId } = req.body;
+    const { followId } = req.params;
+
+    const loggedInUser = await User.findById(loggedInId);
+    const followUser = await User.findById(followId);
+
+    // console.log("loggedInId:", loggedInId);
+    // console.log("followId:", followId);
+
+    if (!loggedInUser || !followUser) {
+      return res.status(404).json({
+        success: "false",
+        message: "User not found",
+      });
+    }
+
+    if (!followUser.followers.includes(loggedInId)) {
+      await followUser.updateOne({ $push: { followers: loggedInId } });
+      await loggedInUser.updateOne({ $push: { following: followId } });
+    } else {
+      return res.status(400).json({
+        message: `user already follows ${followUser.name}`,
+      });
+    }
+
+    return res.status(200).json({
+      success: "true",
+      message: `${loggedInUser.name} just followed ${followUser.name}`,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const unFollow = async (req, res) => {
+  try {
+    const { loggedInId } = req.body;
+    const { followId } = req.params;
+
+    const loggedInUser = await User.findById(loggedInId);
+    const followUser = await User.findById(followId);
+
+    // console.log("loggedInId:", loggedInId);
+    // console.log("followId:", followId);
+
+    if (!loggedInUser || !followUser) {
+      return res.status(404).json({
+        success: "false",
+        message: "User not found",
+      });
+    }
+
+    if (followUser.followers.includes(loggedInId)) {
+      await followUser.updateOne({ $pull: { followers: loggedInId } });
+      await loggedInUser.updateOne({ $pull: { following: followId } });
+    } else {
+      return res.status(400).json({
+        message: `user does not follows ${followUser.name}`,
+      });
+    }
+
+    return res.status(200).json({
+      success: "true",
+      message: `${loggedInUser.name} just unfollowed ${followUser.name}`,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
