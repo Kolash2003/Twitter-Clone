@@ -70,3 +70,26 @@ export const login = async (req, res) => {
     console.log(error);
   }
 };
+
+export const getMyProfile = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+
+  return res.status(200).json({
+    success: "true",
+    message: "User details fetched",
+  });
+};
+
+export const logout = (req, res) => {
+
+  res
+    .status(200)
+    .cookie("token", "", {
+      expires: new Date(Date.now()),
+    })
+    .json({
+      success: true,
+      message:"User logged out"
+    });
+};
