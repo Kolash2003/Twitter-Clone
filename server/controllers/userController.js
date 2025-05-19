@@ -77,6 +77,7 @@ export const getMyProfile = async (req, res) => {
 
   return res.status(200).json({
     success: "true",
+    user,
     message: "User details fetched",
   });
 };
